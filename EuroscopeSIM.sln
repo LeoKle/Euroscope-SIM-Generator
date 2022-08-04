@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EuroscopeSIMBib", "EuroscopeSIMBib\EuroscopeSIMBib.csproj", "{C82FD8A8-095F-4591-8D88-DFEC03C0EF6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Konsole", "Konsole\Konsole.csproj", "{7633C68D-009D-40F1-B498-14D5892BEF57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C82FD8A8-095F-4591-8D88-DFEC03C0EF6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C82FD8A8-095F-4591-8D88-DFEC03C0EF6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C82FD8A8-095F-4591-8D88-DFEC03C0EF6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C82FD8A8-095F-4591-8D88-DFEC03C0EF6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7633C68D-009D-40F1-B498-14D5892BEF57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7633C68D-009D-40F1-B498-14D5892BEF57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7633C68D-009D-40F1-B498-14D5892BEF57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7633C68D-009D-40F1-B498-14D5892BEF57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C0EC8406-3FB8-483D-9ACE-0B53E49C0E4C}
+	EndGlobalSection
+EndGlobal
