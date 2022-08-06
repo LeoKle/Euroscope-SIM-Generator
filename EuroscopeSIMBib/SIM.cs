@@ -60,6 +60,7 @@ namespace EuroscopeSIMBib
         {
             List<ACFT> Outbounds = new List<ACFT>();
             List<ACFT> Inbounds = new List<ACFT>();
+            Squawks Squawkbox = new Squawks();
             /* Outbounds nach Arrival sortieren */
             for (int i = 0; i < Input.Count; i++)
             {
@@ -72,16 +73,10 @@ namespace EuroscopeSIMBib
                     Inbounds.Add(Input[i]);
                 }
             }
-            Int32.TryParse(Console.ReadLine(), out int Abstand);
+            Console.WriteLine("Wie viel Abstand zwischen Arrivals?");
+            Int32.TryParse(Console.ReadLine(), out int ARRSeparation);
             List<string> SimFile = new List<string>();
             #region Standard TXT
-
-            SimFile.Add("PSEUDOPILOT:ALL");
-            SimFile.Add("");
-
-            SimFile.Add("AIRPORT_ALT:302.0");
-            SimFile.Add("");
-
             SimFile.Add("ILS24:50.9336103:7.3699104:50.8695234:7.1548344");
             SimFile.Add("ILS06:50.8162496:6.9815123:50.8612187:7.1274431");
             SimFile.Add("ILS32R:50.8551957:7.1657231:50.8804612:7.1290705");
@@ -98,27 +93,23 @@ namespace EuroscopeSIMBib
             SimFile.Add("HOLDING:KOPAG:205:-1");
             SimFile.Add("");
 
-            SimFile.Add("PSEUDOPILOT:ALL");
+            SimFile.Add("AIRPORT_ALT:302.0");
+            SimFile.Add("");
+
             SimFile.Add("CONTROLLER:UNICOM:122.800");
             SimFile.Add("CONTROLLER:EDDL_APP:128.550");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EDDG_APP:129.300");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EDGG_P_CTR:135.650");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EDDK_APP:135.350");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EDDK_TWR:124.875");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EDGG_G_CTR:124.725");
-            SimFile.Add("PSEUDOPILOT:ALL");
             SimFile.Add("CONTROLLER:EBBU_E_CTR:131.100");
             #endregion
-            for (int i = 0; i <= 120; i += Abstand)
+            for (int i = 0; i <= 120; i += ARRSeparation)
             {
                 SimFile.Add("");
                 /* Erste Zeile: */
-                SimFile.Add("PSEUDOPILOT:ALL");
+                SimFile.Add("PSEUDOPILOT:EDGG_P_CTR");
 
                 /* Zweite Zeile: Random CS */
                 Random rnd = new Random();
@@ -126,7 +117,7 @@ namespace EuroscopeSIMBib
 
                 Console.WriteLine($"{Inbounds[r].ADEP}: Welche STAR? 1 KOPAG \n 2 ERNEP \n 3 GULKO \n 4 DEPOK");
 
-
+                
                 Int32.TryParse(Console.ReadLine(), out int STAR);
                 // Zeile 1:
                 string Wpt = "";
@@ -148,7 +139,7 @@ namespace EuroscopeSIMBib
                     simroute = "KOPAG COL COL85 RARIX IKE44 ILS32R";
                     fplroute = "KOPAG KOPAG2C";
                 }
-                if (STAR == 2)
+                else if (STAR == 2)
                 {
                     Wpt = "ERNEP";
                     Lat = "50.9941231";
@@ -159,7 +150,7 @@ namespace EuroscopeSIMBib
                     simroute = "ERNEP COL COL85 RARIX IKE44 ILS32R";
                     fplroute = "ERNEP ERNEP1C";
                 }
-                if (STAR == 3)
+                else if (STAR == 3)
                 {
                     Wpt = "GULKO";
                     Lat = "50.6220895";
@@ -181,7 +172,7 @@ namespace EuroscopeSIMBib
                     simroute = "DEPOK KBO COL COL85 RARIX IKE44 ILS32R";
                     fplroute = "DEPOK DEPOK1C";
                 }
-                Squawks Squawkbox = new Squawks();
+                
                 SimFile.Add($"@N:{Inbounds[r].Callsign}:{Squawkbox.GetSquawk()}:1:{Lat}:{Long}:{Alt}:0:{Heading}:0");
 
 
@@ -221,9 +212,63 @@ namespace EuroscopeSIMBib
                 }
 
                 // Achte Zeile:
-                SimFile.Add($"INITALPSEUDOPILOT:EDDK_M_APP");
+                SimFile.Add($"INITIALPSEUDOPILOT:EDGG_P_CTR");
 
 
+
+                Inbounds.Remove(Inbounds[r]);
+            }
+
+
+            Int32.TryParse(Console.ReadLine(), out int DEPSeparation);
+            for (int i=0; i < 120; i+= DEPSeparation)
+            {
+                SimFile.Add("");
+
+                Random rnd = new Random();
+                int r = rnd.Next(Inbounds.Count);
+
+                Console.WriteLine($"{Inbounds[r].ADEP}: Welche SID? 1 NVO \n 2 PODIK \n 3 KUMIK \n 4 WYP");
+
+
+                Int32.TryParse(Console.ReadLine(), out int SID);
+                string StartLat = "N050.51.19.022";
+                string StartLong = "E007.09.56.245";
+                string alt = "302";
+                string RWYHeading = ((int)((316 * 2.88 + 0.5) * 4)).ToString();
+                Console.WriteLine(RWYHeading);
+                string fplroute = "";
+                string simroute = "";
+                if (SID == 1)
+                {
+                    simroute = "DK910 DK911 NVO";
+                    fplroute = "NVO1R NVO";
+                }
+                else if(SID == 2)
+                {
+                    simroute = "DK034 DK035 DK038 PODIP KUMIK";
+                    fplroute = "KUMIK9B KUMIK";
+                }
+                else if(SID == 3)
+                {
+                    simroute = "DK034 DK035 DK038 PODIP";
+                    fplroute = "PODIP8B PODIP";
+                }
+                else
+                {
+                    simroute = "DK034 DK035 DK036 WYP";
+                    fplroute = "WYP5B WYP";
+                }
+
+                SimFile.Add("PSEUDOPILOT:EDGG_P_CTR");
+                SimFile.Add($"@N:{Outbounds[r].Callsign}:{Squawkbox.GetSquawk()}:1:{StartLat}:{StartLong}:{alt}:0:{RWYHeading}:0");
+                SimFile.Add($"$FP{Outbounds[r].Callsign}:*A:I:{Outbounds[r].TypeCat.Substring(0, Outbounds[r].TypeCat.Length - 2)}:420:{Outbounds[r].ADEP}:::0:{Outbounds[r].ADES}:00:00:0:0:::{fplroute}");
+                SimFile.Add($"SIMDATA:{Outbounds[r].Callsign}:*:*:25:1:0");
+                SimFile.Add($"$ROUTE:{simroute}");
+                SimFile.Add($"START:{i}");
+                SimFile.Add($"DELAY:1:2");
+                SimFile.Add($"REQALT:5000");
+                SimFile.Add($"INITIALPSEUDOPILOT:EDGG_P_CTR");
 
                 Inbounds.Remove(Inbounds[r]);
             }
