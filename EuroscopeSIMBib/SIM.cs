@@ -1,277 +1,347 @@
-﻿using System;
+﻿using EuroscopeSIMGen;
+using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EuroscopeSIMBib
+namespace ES
 {
     public class SIM
     {
-        #region EDDL TRANS
-        string DOMUX23 { get; set; } = "DOMUX DL402 DL403 DL404 DL405 DL406 DL407 DL408 DL409 DL410";
-        string DOMUX05 { get; set; } = "DOMUX DL402 DL403 DL404 DL405 DL406 DL407 DL408 DL409 DL410";
-        string HALME23 { get; set; } = "HALME XAMOD DL420 DL421 DL422 DL426 DL428 DL429 DL430";
-        string HALME05 { get; set; } = "HALME BOMBA DL517 Dl518 DL519 GAPNU DL522 RONAD DL524 DL525 DL530";
-        string BIKMU23 { get; set; } = "BIKMU DL426 DL428 DL429 DL430";
-        string BIKMU05 { get; set; } = "BIKMU RONAD DL513 DL514 IBIKO GAPNU DL522 DL524 DL525 DL530";
-        string PISAP23 { get; set; } = "PISAP AGEDA XAMOD DL420 DL421 DL422 DL426 DL428 DL429 DL430";
-        string PISAP05 { get; set; } = "PISAP VALSU GAPNU DL522 RONAD DL524 DL525 DL530";
-        #endregion
-        #region EDDK TRANS
-
-        #endregion
-        #region EDDK STAR
-
-        #endregion
-        static int arrivalpoints { get; set; }
-        public SIM(string airport)
+        internal static List<string> ImportACFT(string suffix)
         {
-            if(airport == "EDDL")
+            #region Read flights.csv
+            List<string> output = new List<string>();
+            try
             {
-                arrivalpoints = 4;
+                StreamReader reader = new StreamReader($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}/{suffix}.csv");
+
+                using (reader)
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        output.Add(line);
+                    }
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(".csv file not found \n Make sure you put the flights.csv in MyDocuments");
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                System.Environment.Exit(0);
+                /* string fileName;
+                OpenFileDialog fd = new OpenFileDialog();
+                fd.ShowDialog();
+                fileName = fd.FileName;
+                Console.Write(fileName); */
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Fehler beim Einlesen der CSV: ");
+                Console.WriteLine(e.Message);
+            }
+            return output;
+            #endregion
+        }
+
+        internal static List<ACFT> CreateAircraft(List<string> Input)
+        {
+            List<ACFT> AircraftList = new List<ACFT>();
+            //Squawks SquawkAssigner = new Squawks(); not needed if static
+            for (int i = 1; i < Input.Count; i++)
+            {
+                string[] subs = Input[i].Split(';');
+                ACFT CurrentAircraft = new ACFT(subs[0], subs[1], subs[2], subs[3], Squawks.AssignSquawk());
+                AircraftList.Add(CurrentAircraft);
+            }
+
+            return AircraftList;
+        }
+
+        public static void GenerateSIM()
+        {
+            #region Selection for airport
+            string _input;
+            do
+            {
+                Console.WriteLine("Which airport? \n EDDL or EDDK");
+                _input = Console.ReadLine();
+                _input = _input.ToUpper();
+            } while (_input != "EDDL" && _input != "EDDK");
+
+            IAirport airport;
+            string _runwaydirection;
+            if (_input == "EDDL")
+            {
+                do
+                {
+                    Console.WriteLine("Which runway direction? \n 23 or 05");
+                    _runwaydirection = Console.ReadLine();
+                } while (_runwaydirection != "05" && _runwaydirection != "23");
+                airport = new EDDL(_runwaydirection);
+            }
+            else if (_input == "EDDK")
+            {
+                {
+                    Console.WriteLine("Which runway direction? \n 14 or 32");
+                    _runwaydirection = Console.ReadLine();
+                } while (_runwaydirection != "14" && _runwaydirection != "32") ;
+
+                airport = new EDDL(_runwaydirection);
             }
             else
             {
-                arrivalpoints = 4;
+                throw new ArgumentException();
             }
-        }
+            #endregion
 
-        public static List<ACFT> CreateAircraft(List<string> Input)
-        {
-            List<ACFT> ACFTListe = new List<ACFT>();
-            for (int i = 1; i < Input.Count; i++)
-            {
-                ACFT aktuellesFlugzeug = new ACFT();
-                string[] subs = Input[i].Split(';');
+            #region Get aircraft list of selected airport
+            List<string> import = SIM.ImportACFT(airport.ICAO);
+            #endregion
 
-                aktuellesFlugzeug.Callsign = subs[0];
-                aktuellesFlugzeug.ADEP = subs[1];
-                aktuellesFlugzeug.ADES = subs[2];
-                aktuellesFlugzeug.TypeCat = subs[3];
-                ACFTListe.Add(aktuellesFlugzeug);
-            }
-
-
-            return ACFTListe;
-        }
-
-        public static List<string> CreateSimFile(List<ACFT> Input)
-        {
+            #region Create aircraft list and split by arrival and departure
+            List<ACFT> AircraftList = SIM.CreateAircraft(import);
             List<ACFT> Outbounds = new List<ACFT>();
             List<ACFT> Inbounds = new List<ACFT>();
-            Squawks Squawkbox = new Squawks();
-            /* Outbounds nach Arrival sortieren */
-            for (int i = 0; i < Input.Count; i++)
+
+            for (int i = 0; i < AircraftList.Count; i++)
             {
-                if (Input[i].ADEP == "EDDK" || Input[i].ADEP == "EDDL")
+                if (AircraftList[i].DEP == airport.ICAO)
                 {
-                    Outbounds.Add(Input[i]);
+                    Outbounds.Add(AircraftList[i]);
                 }
                 else
                 {
-                    Inbounds.Add(Input[i]);
+                    Inbounds.Add(AircraftList[i]);
                 }
             }
-            Console.WriteLine("Wie viel Abstand zwischen Arrivals?");
-            Int32.TryParse(Console.ReadLine(), out int ARRSeparation);
-            List<string> SimFile = new List<string>();
-            #region Standard TXT
-            SimFile.Add("ILS24:50.9336103:7.3699104:50.8695234:7.1548344");
-            SimFile.Add("ILS06:50.8162496:6.9815123:50.8612187:7.1274431");
-            SimFile.Add("ILS32R:50.8551957:7.1657231:50.8804612:7.1290705");
-            SimFile.Add("ILS32L:50.8585091:7.1387503:50.8708337:7.1208554");
-            SimFile.Add("");
-
-            SimFile.Add("HOLDING:WYP:261:-1");
-            SimFile.Add("HOLDING:COL:298:-1");
-            SimFile.Add("HOLDING:KBO:140:1");
-            SimFile.Add("HOLDING:NVO:68:1");
-            SimFile.Add("HOLDING:ELDAR:356:-1");
-            SimFile.Add("HOLDING: ERUKI:93:1");
-            SimFile.Add("HOLDING:GULKO:276:-1");
-            SimFile.Add("HOLDING:KOPAG:205:-1");
-            SimFile.Add("");
-
-            SimFile.Add("AIRPORT_ALT:302.0");
-            SimFile.Add("");
-
-            SimFile.Add("CONTROLLER:UNICOM:122.800");
-            SimFile.Add("CONTROLLER:EDDL_APP:128.550");
-            SimFile.Add("CONTROLLER:EDDG_APP:129.300");
-            SimFile.Add("CONTROLLER:EDGG_P_CTR:135.650");
-            SimFile.Add("CONTROLLER:EDDK_APP:135.350");
-            SimFile.Add("CONTROLLER:EDDK_TWR:124.875");
-            SimFile.Add("CONTROLLER:EDGG_G_CTR:124.725");
-            SimFile.Add("CONTROLLER:EBBU_E_CTR:131.100");
             #endregion
-            for (int i = 0; i <= 120; i += ARRSeparation)
+
+            #region Interval selection and mode selection
+            Console.WriteLine("Select sim duration in minutes");
+            Int32.TryParse(Console.ReadLine(), out int _duration);
+            bool erfolgreich;
+            int _auswahl;
+            do
             {
-                SimFile.Add("");
-                /* Erste Zeile: */
-                SimFile.Add("PSEUDOPILOT:EDGG_P_CTR");
+                Console.WriteLine("Which interval mode should be used?");
+                Console.WriteLine("1. Constant: A constant interval allowing for a steady workflow");
+                /*
+                Console.WriteLine("2. Decreasing: Selection of 2 intervals, interval is decreasing therby increasing the amount of aircraft per time");
+                Console.WriteLine("3. Alternating: Interval alternates between 2 intervals"); */
 
-                /* Zweite Zeile: Random CS */
-                Random rnd = new Random();
-                int r = rnd.Next(Inbounds.Count);
+                erfolgreich = Int32.TryParse(Console.ReadLine(), out _auswahl) && (_auswahl == 1 || _auswahl == 2 || _auswahl == 3);
+            } while (erfolgreich == false);
+            int interval = 1;
 
-                Console.WriteLine($"{Inbounds[r].ADEP}: Welche STAR? 1 KOPAG \n 2 ERNEP \n 3 GULKO \n 4 DEPOK");
 
-                
-                Int32.TryParse(Console.ReadLine(), out int STAR);
-                // Zeile 1:
-                string Wpt = "";
-                string Lat = "";
-                string Long = "";
-                string Alt = "";
-                string Heading = "";
-                string simroute = "";
-                string fplroute = "";
+            if (_auswahl == 1)
+            {
+                Console.WriteLine("Select constant interval: ");
+                Int32.TryParse(Console.ReadLine(), out interval);
+            }
+            /*
+            float interval2 = 0;
+            if (_auswahl == 2)
+            {
+                Console.WriteLine("Select the first/start interval");
+                float.TryParse(Console.ReadLine(), out interval);
+                Console.WriteLine("Select the second/end interval");
+                float.TryParse(Console.ReadLine(), out interval2);
+            }
+            if (_auswahl == 3)
+            {
+                Console.WriteLine("Select the first interval");
+                float.TryParse(Console.ReadLine(), out interval);
+                Console.WriteLine("Select the second interval");
+                float.TryParse(Console.ReadLine(), out interval2);
+            } */
+            #endregion
 
-                if (STAR == 1)
+            #region further SIM settings
+            int outboundsactive;
+            string OutboundStartPosition = "";
+            do
+            {
+                Console.WriteLine("Should outbounds be included? \n 1. Yes \n2. No");
+                Int32.TryParse(Console.ReadLine(), out outboundsactive);
+            } while (outboundsactive != 1 && outboundsactive != 2);
+            int outboundinterval = 500; //initialization to avoid problems in region "Generate outbound flow
+            if (outboundsactive == 1)
+            {
+                #region outbound interval
+                do
                 {
-                    Wpt = "KOPAG";
-                    Lat = "51.1560671";
-                    Long = "8.2183844";
-                    Alt = "11000";
-                    Heading = "2848";
-
-                    simroute = "KOPAG COL COL85 RARIX IKE44 ILS32R";
-                    fplroute = "KOPAG KOPAG2C";
-                }
-                else if (STAR == 2)
+                    Console.WriteLine("Should outbounds have the same interval as inbounds? \n 1. Yes \n2. No");
+                    Int32.TryParse(Console.ReadLine(), out outboundinterval);
+                } while (outboundinterval != 1 && outboundinterval != 2);
+                if (outboundinterval == 2)
                 {
-                    Wpt = "ERNEP";
-                    Lat = "50.9941231";
-                    Long = "8.7143664";
-                    Alt = "18000";
-                    Heading = "3016";
-
-                    simroute = "ERNEP COL COL85 RARIX IKE44 ILS32R";
-                    fplroute = "ERNEP ERNEP1C";
-                }
-                else if (STAR == 3)
-                {
-                    Wpt = "GULKO";
-                    Lat = "50.6220895";
-                    Long = "8.1815946";
-                    Alt = "11000";
-                    Heading = "3532";
-
-                    simroute = "GULKO COL COL85 RARIX IKE44 ILS32R";
-                    fplroute = "GULKO GULKO2C";
+                    bool outboundintervaltryparse;
+                    do
+                    {
+                        Console.WriteLine("Which interval should outbounds have?");
+                        outboundintervaltryparse = Int32.TryParse(Console.ReadLine(), out outboundinterval);
+                    } while (outboundintervaltryparse == true);
                 }
                 else
                 {
-                    Wpt = "DEPOK";
-                    Lat = "50.4566440";
-                    Long = "5.7003220";
-                    Alt = "17000";
-                    Heading = "3532";
-
-                    simroute = "DEPOK KBO COL COL85 RARIX IKE44 ILS32R";
-                    fplroute = "DEPOK DEPOK1C";
+                    outboundinterval = interval;
                 }
-                
-                SimFile.Add($"@N:{Inbounds[r].Callsign}:{Squawkbox.GetSquawk()}:1:{Lat}:{Long}:{Alt}:0:{Heading}:0");
-
-
-                // Zweite Zeile:
-                // 
-                SimFile.Add($"$FP{Inbounds[r].Callsign}:*A:I:{Inbounds[r].TypeCat.Substring(0, Inbounds[r].TypeCat.Length - 2)}:420:{Inbounds[r].ADEP}:::0:{Inbounds[r].ADES}:00:00:0:0:::{fplroute}");
-
-                // Dritte Zeile:
-                // SIMDATA:<callsign>:<plane type>:<livery>:<maximum taxi speed>:<taxiway usage>:<object extent>
-                SimFile.Add($"SIMDATA:{Inbounds[r].Callsign}:*:*:25:1:0");
-
-                // Vierte Zeile:
-                SimFile.Add($"$ROUTE:{simroute}");
-
-                // Fünfte Zeile:
-                SimFile.Add($"START:{i}");
-
-                // Sechste Zeile:
-                SimFile.Add($"DELAY:1:2");
-
-                // Siebte Zeile:
-                if(Wpt == "KOPAG")
+                #endregion
+                #region Ground or Air start ?
+                int groundorairstart;
+                do
                 {
-                    SimFile.Add($"REQALT:KOPAG:11000");
-                }
-                if(Wpt == "ERNEP")
+                    Console.WriteLine("Should outbounds start on 1) ground or 2) in air");
+                    Int32.TryParse(Console.ReadLine(), out groundorairstart);
+                } while (groundorairstart != 1 && groundorairstart != 2);
+                if (groundorairstart == 1)
                 {
-                    SimFile.Add($"REQALT:ERNEP:12000");
-                }
-                if(Wpt == "GULKO")
-                {
-                    SimFile.Add($"REQALT:GULKO:11000");
-                }
-                if(Wpt == "DEPOK")
-                {
-                    SimFile.Add($"REQALT:DEPOK:17000");
-                }
+                    Console.WriteLine("Outbound aircraft are starting on ground and have to be commanded to takeoff manually");
+                    if (airport.SelectedRunwayDirection == "05")
+                    {
+                        OutboundStartPosition = airport.DepartureGroundstart[1];
+                    }
+                    else
+                    {
+                        OutboundStartPosition = airport.DepartureGroundstart[0];
+                    }
 
-                // Achte Zeile:
-                SimFile.Add($"INITIALPSEUDOPILOT:EDGG_P_CTR");
-
-
-
-                Inbounds.Remove(Inbounds[r]);
-            }
-
-
-            Int32.TryParse(Console.ReadLine(), out int DEPSeparation);
-            for (int i=0; i < 120; i+= DEPSeparation)
-            {
-                SimFile.Add("");
-
-                Random rnd = new Random();
-                int r = rnd.Next(Inbounds.Count);
-
-                Console.WriteLine($"{Inbounds[r].ADEP}: Welche SID? 1 NVO \n 2 PODIK \n 3 KUMIK \n 4 WYP");
-
-
-                Int32.TryParse(Console.ReadLine(), out int SID);
-                string StartLat = "N050.51.19.022";
-                string StartLong = "E007.09.56.245";
-                string alt = "302";
-                string RWYHeading = ((int)((316 * 2.88 + 0.5) * 4)).ToString();
-                Console.WriteLine(RWYHeading);
-                string fplroute = "";
-                string simroute = "";
-                if (SID == 1)
-                {
-                    simroute = "DK910 DK911 NVO";
-                    fplroute = "NVO1R NVO";
-                }
-                else if(SID == 2)
-                {
-                    simroute = "DK034 DK035 DK038 PODIP KUMIK";
-                    fplroute = "KUMIK9B KUMIK";
-                }
-                else if(SID == 3)
-                {
-                    simroute = "DK034 DK035 DK038 PODIP";
-                    fplroute = "PODIP8B PODIP";
                 }
                 else
                 {
-                    simroute = "DK034 DK035 DK036 WYP";
-                    fplroute = "WYP5B WYP";
+                    Console.WriteLine("Outbound aircraft are starting in air");
+                    if (airport.SelectedRunwayDirection == "05")
+                    {
+                        OutboundStartPosition = airport.DepartureAirstart[1];
+                    }
+                    else
+                    {
+                        OutboundStartPosition = airport.DepartureAirstart[0];
+                    }
                 }
-
-                SimFile.Add("PSEUDOPILOT:EDGG_P_CTR");
-                SimFile.Add($"@N:{Outbounds[r].Callsign}:{Squawkbox.GetSquawk()}:1:{StartLat}:{StartLong}:{alt}:0:{RWYHeading}:0");
-                SimFile.Add($"$FP{Outbounds[r].Callsign}:*A:I:{Outbounds[r].TypeCat.Substring(0, Outbounds[r].TypeCat.Length - 2)}:420:{Outbounds[r].ADEP}:::0:{Outbounds[r].ADES}:00:00:0:0:::{fplroute}");
-                SimFile.Add($"SIMDATA:{Outbounds[r].Callsign}:*:*:25:1:0");
-                SimFile.Add($"$ROUTE:{simroute}");
-                SimFile.Add($"START:{i}");
-                SimFile.Add($"DELAY:1:2");
-                SimFile.Add($"REQALT:5000");
-                SimFile.Add($"INITIALPSEUDOPILOT:EDGG_P_CTR");
-
-                Inbounds.Remove(Inbounds[r]);
+                #endregion
             }
+            #endregion
+
+            #region Definition text
+            List<string> SimFile = new List<string>();
+            SimFile = GenerateSimFileStandardText(SimFile, airport);
+            #endregion
+
+            #region Generate outbound flow
+            if (outboundsactive == 1)
+            {
+                #region SID Distribution
+                List<int> SIDSelectionDistribution = new List<int>();
+                Console.WriteLine($"Enter SID selection/distribution key: i.e. 5:1:2:5. {airport.ICAO} needs {airport.SIDS[airport.SelectedRunwayDirectionIndex].Count} numbers \n or type \"random\" for a random distribution");
+                string _lastword = "";
+                Console.WriteLine("Distribution numbers have to be in this order: \n");
+                for (int i = 0; i < airport.SIDS[airport.SelectedRunwayDirectionIndex].Count; i++)
+                {
+                    _lastword = airport.SIDS[airport.SelectedRunwayDirectionIndex][i].Split(' ').Last();
+                    if (i < airport.SIDS[airport.SelectedRunwayDirectionIndex].Count - 1)
+                    {
+                        Console.Write(_lastword + ":");
+                    }
+                    else
+                    {
+                        Console.Write(_lastword + "\n");
+                    }
+                }
+                // reading and computing distribution key
+
+                string _distributionkey;
+                bool validEntry = false;
+                List<int> distribution = new List<int>();
+                do
+                {
+                    _distributionkey = Console.ReadLine();
+
+                    string[] _subStrings = _distributionkey.Split(':');
+                    foreach (string substring in _subStrings)
+                    {
+                        if (substring != ":")
+                        {
+                            Int32.TryParse(substring, out int _convertedInt);
+                            distribution.Add(_convertedInt);
+                            //Console.Write(_convertedInt + " ");
+                        }
+                    }
+                    if (distribution.Count == airport.SIDS[airport.SelectedRunwayDirectionIndex].Count)
+                    {
+                        validEntry = true;
+                    }
+                    if (validEntry == false)
+                    {
+                        Console.Write($"Wrong input, input has to look like this 5:1:3:4 -> It needs {airport.SIDS[airport.SelectedRunwayDirectionIndex].Count} numbers, separated by : \n");
+                        //Console.Write(distribution.Count);
+                        distribution.Clear();
+                    }
+                } while (validEntry != true);
+                #endregion
+                for (int i = 0; i < _duration; i++)
+                {
+                    // Empty Line to separate each aircraft in .txt file
+                    SimFile.Add("");
+                    // random callsign from outbound list
+                    Random rnd = new Random();
+                    int r = rnd.Next(Outbounds.Count);
+                    string RWYHeading = "";
+                    if (Int32.TryParse(airport.SelectedRunwayDirection + airport.RunwayHeadingLastNumber, out int heading))
+                    {
+                        RWYHeading = ((int)((heading * 2.88 + 0.5) * 4)).ToString();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error occured while converting runway heading to string");
+                        Console.ReadLine();
+                        System.Environment.Exit(0);
+                    }
+
+                    int SelectedSID = 0; // TODO
+
+                    string simroute = ""; //TODO
+
+                    SimFile.Add($"@N:{Outbounds[r].Callsign}:{Squawks.AssignSquawk()}:1:{OutboundStartPosition}:{airport.Elevation}:0:{RWYHeading}:0");
+                    SimFile.Add($"$FP{Outbounds[r].Callsign}:*A:I:{Outbounds[r].ATYP.Substring(0, Outbounds[r].ATYP.Length - 2)}:420:{Outbounds[r].DEP}:::0:{Outbounds[r].DEST}:00:00:0:0:::{airport.SIDS[SelectedSID]}");
+                    SimFile.Add($"SIMDATA:{Outbounds[r].Callsign}:*:*:25:1:0");
+                    SimFile.Add($"$ROUTE:{simroute}");
+                    SimFile.Add($"START:{i}");
+                    SimFile.Add($"DELAY:1:2");
+                    SimFile.Add($"REQALT:5000");
+                    SimFile.Add($"INITIALPSEUDOPILOT:EDGG_P_CTR");
+                }
+            }
+            #endregion
+        }
+
+        internal static List<string> GenerateSimFileStandardText(List<string> SimFile, IAirport airport)
+        {
+            #region ILS/runway definitions
+            for (int i = 0; i < 4; i++)
+            {
+                SimFile.Add($"{airport.ILSDefinition[airport.SelectedRunwayDirectionIndex][i]}");
+            }
+            #endregion
+
+            #region Holding definitions
+            for (int i = 0; i < airport.Holdings.Length; i++)
+            {
+                SimFile.Add($"{airport.Holdings[i]}");
+            }
+            #endregion
+            #region airport elevation
+            SimFile.Add($"AIRPORT_ALT:{airport.Elevation}");
+            #endregion
+
 
             return SimFile;
         }

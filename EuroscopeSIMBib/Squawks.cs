@@ -4,28 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EuroscopeSIMBib
+namespace ES
 {
-    public class Squawks
+    internal class Squawks
     {
-        public  List<int> AvailableSquawks = new List<int>();
+        internal List<int> AvailableSquawks = new List<int>();
 
-        public Squawks()
+        internal Squawks()
         {
             for (int i = 2001; i <= 2577; i++)
             {
                 AvailableSquawks.Add(i);
             }
         }
-        internal string GetSquawk()
+        internal static string AssignSquawk()
         {
-            string Squawk = "";
-            Random rnd = new Random();
+            /*Random rnd = new Random();
             int r = rnd.Next(AvailableSquawks.Count);
 
             Squawk = AvailableSquawks[r].ToString();
-            AvailableSquawks.RemoveAt(r);
-            return Squawk;
+            AvailableSquawks.RemoveAt(r); */ //aircraft count exceeds squawks count, fix needed
+
+            return "1000";
         }
     }
 }

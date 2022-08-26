@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace EuroscopeSIMBib
+namespace ES
 {
-    public class InputOutput
+    internal class InputOutput
     {
         public static List<string> ReadCSV(string suffix)
         {
@@ -37,7 +37,7 @@ namespace EuroscopeSIMBib
             DateTime dateTime = DateTime.Now;
             string date = $"{dateTime.Day}.{dateTime.Month}";
             var File = new StreamWriter($"C:\\Users\\Leon\\Desktop\\Vatsim\\SIM\\{date}.txt");
-            foreach(string line in Output)
+            foreach (string line in Output)
             {
                 File.WriteLine(line);
             }
