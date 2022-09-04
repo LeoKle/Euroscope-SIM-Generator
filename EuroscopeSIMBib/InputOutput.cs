@@ -45,11 +45,19 @@ namespace ES
             return FlightsData;
         }
 
-        public static void ExportSimFile(List<string> Output)
+        internal static void ExportJson(string jsonstring)
+        {
+            var File = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIMGEN\\airports.json");
+            File.Write(jsonstring);
+            File.Flush();
+            File.Close();
+        }
+
+        internal static void ExportSimFile(List<string> Output)
         {
             DateTime dateTime = DateTime.Now;
-            string date = $"{dateTime.Day}.{dateTime.Month}";
-            System.IO.Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIM\\SIMGEN");
+            string date = $"{dateTime.Month}.{dateTime.Day}.{dateTime.Hour}{dateTime.Minute}";
+            
             var File = new StreamWriter($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIMGEN\\{date}.txt");
             foreach (string line in Output)
             {
@@ -57,6 +65,13 @@ namespace ES
             }
             File.Flush();
             File.Close();
+        }
+        /// <summary>
+        /// Creates directory in Documents\Euroscope\SIMGEN, if it already exists the return (DirectoryInfo) will be ignored
+        /// </summary>
+        internal static void CheckFolder()
+        {
+            System.IO.Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIMGEN");
         }
     }
 }

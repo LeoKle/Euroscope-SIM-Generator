@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.IO;
+using System.Security.Principal;
+
 
 namespace EuroscopeSIMBib
 {
@@ -19,7 +23,7 @@ namespace EuroscopeSIMBib
         private int _selectedPseudopilot;
         private List<string> SimFile = new List<string>();
 
-        private AirportJson _airport = new AirportJson();
+        private Airport _airport = new Airport();
 
         private List<ACFT> AircraftList = new List<ACFT>();
         private List<ACFT> Outbounds = new List<ACFT>();
@@ -44,8 +48,21 @@ namespace EuroscopeSIMBib
 
         public void GenerateSIM()
         {
+            InputOutput.CheckFolder();
             AirportSelection(out string ICAO, out _runwaydirectionindex);
-            // serialize _airport
+            
+            string address = $"C:\\Users\\Leon\\Documents\\EuroScope\\SIMGEN\\{ICAO.ToUpper()}.json";
+            if (File.Exists(address))
+            {
+                var airport = JsonConvert.DeserializeObject<Airport>(File.ReadAllText(address));
+                _airport = airport;
+                List<Airport> Listairport = new List<Airport>();
+                Listairport.Add(airport);
+                Listairport.Add(airport);
+                string json = JsonConvert.SerializeObject(Listairport, Formatting.Indented);
+                InputOutput.ExportJson(json);
+            }
+            /*
             AircraftList = CreateAircraft(InputOutput.ImportFlightData(ICAO));
             SplitAircraftList(ICAO, AircraftList, out Outbounds, out Inbounds);
             DurationAndIntervalSelection(Outbounds.Count, Inbounds.Count, out _duration);
@@ -53,6 +70,7 @@ namespace EuroscopeSIMBib
             GenerateSimFileStandardText();
             GenerateOutbounds();
             GenerateInbounds();
+            InputOutput.ExportSimFile(SimFile); */
         }
 
         private void AirportSelection(out string ICAO, out int RunwayDirectionIndex)
@@ -235,7 +253,7 @@ namespace EuroscopeSIMBib
 
             for(int i = 0; i < 4; i++)
             {
-                SimFile.Add($"{_airport.ILSDefinitions[_runwaydirectionindex, i]}");
+                SimFile.Add($"{_airport.ILSDefinitions[i]}");
             }
 
             #endregion
@@ -291,8 +309,8 @@ namespace EuroscopeSIMBib
                     int SIDnumber = Random.Next(OutboundDistribution.Count);
                     SIDnumber = OutboundDistribution[SIDnumber];
 
-                    simroute = _airport.SIDSroute[_runwaydirectionindex, SIDnumber];
-                    flightplan = _airport.SIDSflightplan[_runwaydirectionindex, SIDnumber];
+                    simroute = _airport.SIDSroute[_runwaydirectionindex][SIDnumber];
+                    flightplan = _airport.SIDSflightplan[_runwaydirectionindex][SIDnumber];
 
                     SimFile.Add($"$FP{Outbounds[CallsignNumber].Callsign}:*A:I:{Outbounds[CallsignNumber].ATYP.Substring(0, Outbounds[CallsignNumber].ATYP.Length - 2)}:420:{Outbounds[CallsignNumber].DEP}:::0:{flightplan}");
                     SimFile.Add($"SIMDATA:{Outbounds[CallsignNumber].Callsign}:*:*:25:1:0");
@@ -300,7 +318,7 @@ namespace EuroscopeSIMBib
                     SimFile.Add($"START:{i}");
                     SimFile.Add($"DELAY:1:2");
                     SimFile.Add($"REQALT:5000");
-                    SimFile.Add($"INITIALPSEUDOPILOT:{_selectedPseudopilot}");
+                    SimFile.Add($"INITIALPSEUDOPILOT:{_airport.Pseudopilots[_selectedPseudopilot]}");
 
                     Outbounds.RemoveAt(CallsignNumber);
                 }
@@ -330,9 +348,9 @@ namespace EuroscopeSIMBib
 
                 string _SIDorSTAR = "";
                 //int _distributionlength = 0;
-                string[,] RouteList = new string[_airport.RunwayDirections[0].Count(), _airport.STARSroute.GetLength(_runwaydirectionindex)];
-                string[,] FlightplanList = new string[_airport.RunwayDirections[0].Count(), _airport.STARSroute.GetLength(_runwaydirectionindex)];
-                string[,] AltitudeList = new string[_airport.RunwayDirections[0].Count(), _airport.STARSroute.GetLength(_runwaydirectionindex)];
+                string[][] RouteList = new string[1][];
+                string[][] FlightplanList = new string[1][];
+                string[][] AltitudeList = new string[1][];
                 if (STARorTRANS == 0)
                 {
                     _SIDorSTAR = "STAR";
@@ -367,33 +385,42 @@ namespace EuroscopeSIMBib
                     // Get random callsign from inbound list
                     int CallsignNumber = Random.Next(Inbounds.Count());
                     // Assign random star / transition
-                    int ArrivalSelection = Random.Next(OutboundDistribution.Count);
-                    ArrivalSelection = OutboundDistribution[ArrivalSelection];
+                    int ArrivalSelection = Random.Next(ArrivalDistribution.Count);
+                    ArrivalSelection = ArrivalDistribution[ArrivalSelection];
 
 
-                    simroute = RouteList[_runwaydirectionindex, ArrivalSelection];
-                    fplnroute = FlightplanList[_runwaydirectionindex, ArrivalSelection];
+                    simroute = RouteList[_runwaydirectionindex][ArrivalSelection];
+                    fplnroute = FlightplanList[_runwaydirectionindex][ArrivalSelection];
                     InboundStartPosition = _airport.ArrivalStartPosition[ArrivalSelection];
-                    InboundAltitude = AltitudeList[_runwaydirectionindex, ArrivalSelection];
+                    InboundAltitude = AltitudeList[_runwaydirectionindex][ArrivalSelection];
                     InitialHeading = ConvertHeadingtoEuroscopeHeadingString(_airport.ArrivalInitialHeading[ArrivalSelection]);
 
                     SimFile.Add($"@N:{Inbounds[CallsignNumber].Callsign}:{Squawks.AssignSquawk()}:1:{InboundStartPosition}:{InboundAltitude}:0:{InitialHeading}");
+                    SimFile.Add($"$FP{Inbounds[CallsignNumber].Callsign}:*:I:{Inbounds[CallsignNumber].ATYP.Substring(0, Inbounds[CallsignNumber].ATYP.Length - 2)}:420{Inbounds[CallsignNumber].DEST}:00:00:0:0:::{fplnroute}");
+                    SimFile.Add($"SIMDATA:{Inbounds[CallsignNumber].Callsign}:*:*:25:1:0");
+                    SimFile.Add($"$ROUTE:{simroute}");
+                    SimFile.Add($"START:{i}");
+                    SimFile.Add("DELAY:4:10");
+                    SimFile.Add($"REQALT:{InboundAltitude}");
+                    SimFile.Add($"INITIALPSEUDOPILOT:{_airport.Pseudopilots[_selectedPseudopilot]}");
+
+                    Inbounds.RemoveAt(CallsignNumber);
                 }
 
                 #endregion
             }
         }
 
-        private List<int> DistributionInput(string[,] SIDorSTARflightplanarray, string IsSIDorSTAR)
+        private List<int> DistributionInput(string[][] SIDorSTARflightplanarray, string IsSIDorSTAR)
         {
             List<int> _distributionkey = new List<int>();
             List<int> _distribution = new List<int>();
-            string _input = Console.ReadLine();
+            string _input = "";
             bool _validEntry = false;
             do
             {
                 Console.WriteLine($"Enter {IsSIDorSTAR} distribution key: i.e. 5:1:2:5");
-                Console.WriteLine($"{_airport.ICAO} needs {SIDorSTARflightplanarray.GetLength(_runwaydirectionindex)} numbers");
+                Console.WriteLine($"{_airport.ICAO} needs {SIDorSTARflightplanarray[_runwaydirectionindex].Length} numbers");
                 Console.WriteLine("or type \"random\" for a random distribution");
                 Console.WriteLine("Distribtuon numbers have to be in this order: ");
 
@@ -412,7 +439,7 @@ namespace EuroscopeSIMBib
                             _distributionkey.Add(_convertedInt);
                         }
                     }
-                    if (_distributionkey.Count != SIDorSTARflightplanarray.GetLength(_runwaydirectionindex))
+                    if (_distributionkey.Count != SIDorSTARflightplanarray[_runwaydirectionindex].Length)
                     {
                         _validEntry = false;
                         _distributionkey.Clear();
@@ -426,7 +453,8 @@ namespace EuroscopeSIMBib
 
             if(_input.ToUpper() == "RANDOM")
             {
-                for (int i = 0; i < SIDorSTARflightplanarray.GetLength(_runwaydirectionindex); i++)
+                // SIDorSTARflightplanarray.GetLength(_runwaydirectionindex)
+                for (int i = 0; i < SIDorSTARflightplanarray[_runwaydirectionindex].Length; i++)
                 {
                     _distribution.Add(1);
                 }
@@ -435,27 +463,30 @@ namespace EuroscopeSIMBib
             {
                 for (int i = 0; i < _distributionkey.Count; i++)
                 {
-                    _distribution.Add(_distributionkey[i]);
+                    for (int j = 0; j < _distributionkey[i]; j++)
+                    {
+                        _distribution.Add(i);
+                    }
                 }
             }
 
-            return _distributionkey;
+            return _distribution;
         }
 
-        private void WriteDepartureorArrivalName(string[,] SIDorSTARflightplanarray, string IsSIDorSTAR)
+        private void WriteDepartureorArrivalName(string[][] SIDorSTARflightplanarray, string IsSIDorSTAR)
         {
             string _name;
-            for (int i = 0; i < SIDorSTARflightplanarray.GetLength(_runwaydirectionindex); i++)
+            for (int i = 0; i < SIDorSTARflightplanarray[_runwaydirectionindex].Length; i++)
             {
                 if (IsSIDorSTAR == "SID")
                 {
-                    _name = SIDorSTARflightplanarray[_runwaydirectionindex, i].Split(' ').Last();
+                    _name = SIDorSTARflightplanarray[_runwaydirectionindex][i].Split(' ').Last();
                 }
                 else
                 {
-                    _name = SIDorSTARflightplanarray[_runwaydirectionindex, i].Split(' ').First();
+                    _name = SIDorSTARflightplanarray[_runwaydirectionindex][i].Split(' ').First();
                 }
-                if (i < SIDorSTARflightplanarray.GetLength(_runwaydirectionindex) - 1)
+                if (i < SIDorSTARflightplanarray[_runwaydirectionindex].Length - 1)
                 {
                     Console.Write(_name + ":");
                 }

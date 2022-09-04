@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ES
 {
-    internal class Airport
+    internal class Airport2
     {
         internal virtual string ICAO { get; set; }
         /// <summary>

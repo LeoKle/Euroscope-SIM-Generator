@@ -8,7 +8,7 @@ using System.Xml.Schema;
 
 namespace EuroscopeSIMGen
 {
-    internal class EDDL : Airport
+    internal class EDDL : Airport2
     {
 
         #region EDDL SIDS 05 

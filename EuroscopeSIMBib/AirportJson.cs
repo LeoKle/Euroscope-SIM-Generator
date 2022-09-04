@@ -16,6 +16,7 @@ namespace EuroscopeSIMBib
         internal string ICAO { get; set; }
         internal string[] RunwayDirections { get; set; }
         internal int[] RunwayHeadings { get; set; }
+        internal string Elevation { get; set; }
 
         #endregion
 
@@ -23,7 +24,7 @@ namespace EuroscopeSIMBib
 
         internal string[,] SIDSroute { get; set; }
         internal string[,] SIDSflightplan { get; set; }
-        internal string[,] SIDSArrivalAltitude { get; set; }
+        internal string[,] SIDSAltitude { get; set; }
 
         internal string[,] STARSroute { get; set; }
         internal string[,] STARSflightplan { get; set; }
@@ -45,7 +46,6 @@ namespace EuroscopeSIMBib
         internal string[,] ILSDefinitions { get; set; }
         internal string[] HoldingDefinitions { get; set; }
         internal string[] Pseudopilots { get; set; }
-        internal string Elevation { get; set; }
 
         #endregion
     }

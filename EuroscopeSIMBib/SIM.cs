@@ -75,7 +75,7 @@ namespace ES
                 _input = _input.ToUpper();
             } while (_input != "EDDL" && _input != "EDDK");
 
-            Airport airport;
+            Airport2 airport;
             string _runwaydirection;
             if (_input == "EDDL")
             {
@@ -548,7 +548,7 @@ namespace ES
             #endregion
         }
 
-        internal static List<string> GenerateSimFileStandardText(List<string> SimFile, Airport airport)
+        internal static List<string> GenerateSimFileStandardText(List<string> SimFile, Airport2 airport)
         {
             #region ILS/runway definitions
             for (int i = 0; i < 4; i++)
