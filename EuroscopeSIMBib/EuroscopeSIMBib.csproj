@@ -48,12 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACFT.cs" />
-    <Compile Include="AirportJson.cs" />
+    <Compile Include="AirportJSON.cs" />
     <Compile Include="EDDL.cs" />
-    <Compile Include="Airport.cs" />
     <Compile Include="InputOutput.cs" />
     <Compile Include="JSON.cs" />
-    <Compile Include="SIM.cs" />
     <Compile Include="SimGen.cs" />
     <Compile Include="Squawks.cs" />
   </ItemGroup>
@@ -63,7 +61,7 @@
   <ItemGroup>
     <None Include="EDDL.json" />
     <None Include="EDDK.json" />
-    <None Include="json1.json" />
+    <None Include="airports.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

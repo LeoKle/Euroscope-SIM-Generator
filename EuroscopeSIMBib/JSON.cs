@@ -31,6 +31,4 @@ namespace EuroscopeSIMBib
         public string[] HoldingDefinitions { get; set; }
         public string[] Pseudopilots { get; set; }
     }
-
-
 }

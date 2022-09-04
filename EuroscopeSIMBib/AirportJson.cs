@@ -9,7 +9,7 @@ namespace EuroscopeSIMBib
     /// <summary>
     /// Attempt at defining an airport using json
     /// </summary>
-    internal class AirportJson
+    internal class AirportJSON
     {
         #region ICAO, runway directions
 
