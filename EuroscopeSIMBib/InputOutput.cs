@@ -1,9 +1,11 @@
-﻿using System;
+﻿using EuroscopeSIMBib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ES
 {
@@ -72,6 +74,33 @@ namespace ES
         internal static void CheckFolder()
         {
             System.IO.Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIMGEN");
+        }
+
+        internal static void ReadJSON(out List<Airport> airports)
+        {
+            airports = new List<Airport>();
+            try
+            {
+                StreamReader reader = new StreamReader($"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\Euroscope\\SIMGEN\\airports.json");
+
+                using (reader)
+                {
+                    string JSON = reader.ReadToEnd();
+                    airports = JsonConvert.DeserializeObject<List<Airport>>(JSON);
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine("airports.json not found \n Make sure you put the flights.csv in MyDocuments");
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                System.Environment.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error while reading airports.json");
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

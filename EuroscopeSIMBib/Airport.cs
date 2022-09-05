@@ -11,7 +11,8 @@ namespace EuroscopeSIMBib
     public class Airport
     {
         public string ICAO { get; set; }
-        public string[] RunwayDirections { get; set; }
+        public string[] RunwayConfigText { get; set; }
+        public string[] RunwayConfig { get; set; }
         public int[] RunwayHeadings { get; set; }
         public string Elevation { get; set; }
         public string[][] SIDSroute { get; set; }

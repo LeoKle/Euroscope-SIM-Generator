@@ -12,8 +12,7 @@ namespace Konsole
     {
         static void Main(string[] args)
         {
-            SimGen Sim = new SimGen();
-            Sim.GenerateSIM();
+            ScenarioFileGenerator.GenerateSim();
         }
     }
 }
