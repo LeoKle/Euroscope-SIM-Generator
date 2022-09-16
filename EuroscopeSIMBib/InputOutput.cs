@@ -91,7 +91,7 @@ namespace ES
             }
             catch (FileNotFoundException e)
             {
-                Console.WriteLine("airports.json not found \n Make sure you put the flights.csv in MyDocuments");
+                Console.WriteLine("airports.json not found \n Make sure you put the airports.json in MyDocuments\\Euroscope\\SIMGEN");
                 Console.WriteLine(e.Message);
                 Console.ReadLine();
                 System.Environment.Exit(0);

@@ -20,10 +20,10 @@ namespace EuroscopeSIMBib
         public string[][] SIDSAltitude { get; set; }
         public string[][] STARSroute { get; set; }
         public string[][] STARSflightplan { get; set; }
-        public string[][] STARSArrivalAltitude { get; set; }
+        public string[][] STARSAltitude { get; set; }
         public string[][] TRANSITIONroute { get; set; }
         public string[][] TRANSITIONflightplan { get; set; }
-        public string[][] TRANSITIONArrivalAltitude { get; set; }
+        public string[][] TRANSITIONAltitude { get; set; }
         public string[] DeparturePositionGroundStart { get; set; }
         public string[] DeparturePositionAirStart { get; set; }
         public string[] ArrivalStartPosition { get; set; }

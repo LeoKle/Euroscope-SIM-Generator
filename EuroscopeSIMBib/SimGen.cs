@@ -49,8 +49,8 @@ namespace EuroscopeSIMBib
         public void GenerateSIM()
         {
             InputOutput.CheckFolder();
-            AirportSelection(out string ICAO, out _runwaydirectionindex);
-            
+            //AirportSelection(out string ICAO, out _runwaydirectionindex);
+            /*
             string address = $"C:\\Users\\Leon\\Documents\\EuroScope\\SIMGEN\\{ICAO.ToUpper()}.json";
             if (File.Exists(address))
             {
@@ -61,8 +61,13 @@ namespace EuroscopeSIMBib
                 Listairport.Add(airport);
                 string json = JsonConvert.SerializeObject(Listairport, Formatting.Indented);
                 InputOutput.ExportJson(json);
-            }
-            /*
+            } */
+
+            InputOutput.ReadJSON(out List<Airport> Airports);
+            AirportSelection(Airports);
+
+
+            
             AircraftList = CreateAircraft(InputOutput.ImportFlightData(ICAO));
             SplitAircraftList(ICAO, AircraftList, out Outbounds, out Inbounds);
             DurationAndIntervalSelection(Outbounds.Count, Inbounds.Count, out _duration);
@@ -70,9 +75,8 @@ namespace EuroscopeSIMBib
             GenerateSimFileStandardText();
             GenerateOutbounds();
             GenerateInbounds();
-            InputOutput.ExportSimFile(SimFile); */
+            InputOutput.ExportSimFile(SimFile);
         }
-
         private void AirportSelection(out string ICAO, out int RunwayDirectionIndex)
         {
             ICAO = "";
@@ -357,7 +361,7 @@ namespace EuroscopeSIMBib
                     //_distributionlength = _airport.STARSroute.GetLength(_runwaydirectionindex);
                     RouteList = _airport.STARSroute;
                     FlightplanList = _airport.STARSflightplan;
-                    AltitudeList = _airport.STARSArrivalAltitude;
+                    AltitudeList = _airport.STARSAltitude;
                 }
                 else
                 {
@@ -365,7 +369,7 @@ namespace EuroscopeSIMBib
                     //_distributionlength = _airport.TRANSITIONroute.GetLength(_runwaydirectionindex);
                     RouteList = _airport.TRANSITIONroute;
                     FlightplanList = _airport.TRANSITIONflightplan;
-                    AltitudeList = _airport.TRANSITIONArrivalAltitude;
+                    AltitudeList = _airport.TRANSITIONAltitude;
                 }
 
                 ArrivalDistribution = DistributionInput(FlightplanList, _SIDorSTAR);
