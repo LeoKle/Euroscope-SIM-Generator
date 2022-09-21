@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ES;
+using EuroscopeSIMBib;
 
 namespace Konsole
 {
@@ -11,7 +12,7 @@ namespace Konsole
     {
         static void Main(string[] args)
         {
-            SIM.GenerateSIM();
+            ScenarioFileGenerator.GenerateSim();
         }
     }
 }
