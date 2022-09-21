@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Deployment.Internal;
+using System.Xml.Linq;
 
 namespace EuroscopeSIMBib
 {
@@ -35,14 +36,22 @@ namespace EuroscopeSIMBib
             InputOutput.ReadJSON(out List<Airport> airports);
 
             PresentandSelectAirport(airports);
+            Console.WriteLine();
             SelectAirportConfig(_selectedairport);
+            Console.WriteLine();
             CreateAircraft();
             DurationAndIntervalSelection();
+            Console.WriteLine();
             EuroScopeScenarioSettings();
+            Console.WriteLine();
             GenerateScenarioFileStandardText();
+            Console.WriteLine();
             GenerateOutbounds();
+            Console.WriteLine();
             GenerateInbounds();
-
+            Console.WriteLine();
+            InputOutput.ExportSimFile(ScenarioFile);
+            Console.WriteLine("Program end");
             Console.ReadLine();
         }
 
@@ -58,6 +67,7 @@ namespace EuroscopeSIMBib
                     Console.WriteLine("Use 1. STAR or 2. TRANS?");
 
                     validEntry = Int32.TryParse(Console.ReadLine(), out int _selection);
+                    Console.WriteLine();
                     validEntry = validEntry == true && _selection <= 2 && _selection >= 1;
                     STARorTRANS = _selection - 1;
                 } while (validEntry == false);
@@ -113,14 +123,15 @@ namespace EuroscopeSIMBib
                     InboundStartPosition = _selectedairport.ArrivalStartPosition[ArrivalSelection];
                     InboundAltitude = AltitudeList[_runwaydirectionindex][ArrivalSelection];
                     InitialHeading = ConvertHeadingtoEuroscopeHeadingString(_selectedairport.ArrivalInitialHeading[ArrivalSelection]);
+                    string firstSIDpointname = GetFirstPointofArrival(fplnroute);
 
-                    ScenarioFile.Add($"@N:{Inbounds[CallsignNumber].Callsign}:{Squawks.AssignSquawk()}:1:{InboundStartPosition}:{InboundAltitude}:0:{InitialHeading}");
-                    ScenarioFile.Add($"$FP{Inbounds[CallsignNumber].Callsign}:*:I:{Inbounds[CallsignNumber].ATYP.Substring(0, Inbounds[CallsignNumber].ATYP.Length - 2)}:420{Inbounds[CallsignNumber].DEST}:00:00:0:0:::{fplnroute}");
+                    ScenarioFile.Add($"@N:{Inbounds[CallsignNumber].Callsign}:1000:1:{InboundStartPosition}:{InboundAltitude}:0:{InitialHeading}:0");
+                    ScenarioFile.Add($"$FP{Inbounds[CallsignNumber].Callsign}:*A:I:{Inbounds[CallsignNumber].ATYP.Substring(0, Inbounds[CallsignNumber].ATYP.Length - 2)}:420:{Inbounds[CallsignNumber].DEP}:::350:{Inbounds[CallsignNumber].DEST}:00:00:0:0:::{fplnroute}");
                     ScenarioFile.Add($"SIMDATA:{Inbounds[CallsignNumber].Callsign}:*:*:25:1:0");
                     ScenarioFile.Add($"$ROUTE:{simroute}");
                     ScenarioFile.Add($"START:{i}");
                     ScenarioFile.Add("DELAY:4:10");
-                    ScenarioFile.Add($"REQALT:{InboundAltitude}");
+                    ScenarioFile.Add($"REQALT:{firstSIDpointname}:{InboundAltitude}");
                     ScenarioFile.Add($"INITIALPSEUDOPILOT:{_selectedairport.Pseudopilots[_selectedPseudopilot]}");
 
                     Inbounds.RemoveAt(CallsignNumber);
@@ -128,6 +139,12 @@ namespace EuroscopeSIMBib
 
                 #endregion
             }
+        }
+
+        private static string GetFirstPointofArrival(string fplnroute)
+        {
+            string _name = fplnroute.Split(' ').First();
+            return _name;
         }
 
         private static void GenerateOutbounds()
@@ -157,16 +174,16 @@ namespace EuroscopeSIMBib
                     int CallsignNumber = Random.Next(Outbounds.Count());
 
                     #endregion
-
-                    ScenarioFile.Add($"@N:{Outbounds[CallsignNumber].Callsign}:{Squawks.AssignSquawk()}:1:{_outboundstartposition}:{_selectedairport.Elevation}:0:{_runwayheading}:0");
+                    // ScenarioFile.Add($"@N:{Outbounds[CallsignNumber].Callsign}:1000:1:{_outboundstartposition}:{_selectedairport.Elevation}:0:{_runwayheading}:0");
+                    ScenarioFile.Add($"@N:{Outbounds[CallsignNumber].Callsign}:1000:1:{_outboundstartposition}:2000:0:{_runwayheading}:0");
 
                     int SIDnumber = Random.Next(_distribution.Count);
                     SIDnumber = _distribution[SIDnumber];
 
                     simroute = _selectedairport.SIDSroute[_runwaydirectionindex][SIDnumber];
                     flightplan = _selectedairport.SIDSflightplan[_runwaydirectionindex][SIDnumber];
-
-                    ScenarioFile.Add($"$FP{Outbounds[CallsignNumber].Callsign}:*A:I:{Outbounds[CallsignNumber].ATYP.Substring(0, Outbounds[CallsignNumber].ATYP.Length - 2)}:420:{Outbounds[CallsignNumber].DEP}:::0:{flightplan}");
+                    
+                    ScenarioFile.Add($"$FP{Outbounds[CallsignNumber].Callsign}:*A:I:{Outbounds[CallsignNumber].ATYP.Substring(0, Outbounds[CallsignNumber].ATYP.Length - 2)}:420:{Outbounds[CallsignNumber].DEP}:::350:{Outbounds[CallsignNumber].DEST}:00:00:0:0:::{flightplan}");
                     ScenarioFile.Add($"SIMDATA:{Outbounds[CallsignNumber].Callsign}:*:*:25:1:0");
                     ScenarioFile.Add($"$ROUTE:{simroute}");
                     ScenarioFile.Add($"START:{i}");
@@ -181,7 +198,7 @@ namespace EuroscopeSIMBib
             }
         }
 
-        private static void WriteDepartureorArrivalName(string[][] SIDorSTARflightplanarray, string IsSIDorSTAR)
+        private static void WriteDepartureorArrivalNames(string[][] SIDorSTARflightplanarray, string IsSIDorSTAR)
         {
             string _name;
             for (int i = 0; i < SIDorSTARflightplanarray[_runwaydirectionindex].Length; i++)
@@ -218,7 +235,7 @@ namespace EuroscopeSIMBib
                 Console.WriteLine("or type \"random\" for a random distribution");
                 Console.WriteLine("Distribtuon numbers have to be in this order: ");
 
-                WriteDepartureorArrivalName(SIDorSTARflightplanarray, IsSIDorSTAR);
+                WriteDepartureorArrivalNames(SIDorSTARflightplanarray, IsSIDorSTAR);
 
                 _input = Console.ReadLine();
 
@@ -242,6 +259,10 @@ namespace EuroscopeSIMBib
                     {
                         _validEntry = true;
                     }
+                }
+                else
+                {
+                    _validEntry = true;
                 }
             } while (_validEntry == false);
 
@@ -365,13 +386,13 @@ namespace EuroscopeSIMBib
                 _limitreached = false;
                 Console.WriteLine("Select sim duration in minutes");
                 bool _durationbool = Int32.TryParse(Console.ReadLine(), out _duration);
-
+                Console.WriteLine();
                 Console.WriteLine("Select inbound separation in minutes \nSelect 0 for none");
                 bool _inboundseparationbool = Int32.TryParse(Console.ReadLine(), out _inboundseparation);
-
+                Console.WriteLine();
                 Console.WriteLine("Select outbound separation in minutes \nSelect 0 for none");
                 bool _outboundseparationbool = Int32.TryParse(Console.ReadLine(), out _outboundseparation);
-
+                Console.WriteLine();
                 if (_durationbool && _inboundseparationbool && _outboundseparationbool)
                 {
                     if (_inboundseparation != 0)
@@ -461,7 +482,7 @@ namespace EuroscopeSIMBib
                     Console.WriteLine($"{i}. {config}");
                     i++;
                 }
-                Console.WriteLine("Select airport:");
+                Console.WriteLine("Select config:");
                 Int32.TryParse(Console.ReadLine(), out _input);
             } while (_input > airport.RunwayConfigText.Length || _input < 1);
             _runwaydirectionindex = _input - 1;

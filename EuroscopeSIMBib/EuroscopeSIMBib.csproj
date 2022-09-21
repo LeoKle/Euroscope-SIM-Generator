@@ -51,8 +51,6 @@
     <Compile Include="InputOutput.cs" />
     <Compile Include="Airport.cs" />
     <Compile Include="ScenarioFileGenerator.cs" />
-    <Compile Include="SimGen.cs" />
-    <Compile Include="Squawks.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

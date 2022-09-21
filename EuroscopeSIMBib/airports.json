@@ -82,7 +82,7 @@
         "DEPOK DEPOK1C"
       ]
     ],
-    "STARSArrivalAltitude": [
+    "STARSAltitude": [
       [
         "11000",
         "12000",
@@ -112,16 +112,16 @@
     ],
     "TRANSITIONflightplan": [
       [
-        "KOPAG KOPA1S",
-        "ERNEP ERNE1S",
-        "GULKO GULK1S",
-        "DEPOK DEPO1S"
+        "KOPAG KOPAG1S",
+        "ERNEP ERNEP1S",
+        "GULKO GULKO1S",
+        "DEPOK DEPOK1S"
       ],
       [
-        "KOPAG KOPA1N",
-        "ERNEP ERNE1N",
-        "GULKO GULK1N",
-        "DEPOK DEPO1N"
+        "KOPAG KOPAG1N",
+        "ERNEP ERNEP1N",
+        "GULKO GULKO1N",
+        "DEPOK DEPOK1N"
       ]
     ],
     "TRANSITIONAltitude": [
@@ -304,7 +304,7 @@
         "BIKMU1X BIKMU"
       ]
     ],
-    "STARSArrivalAltitude": [
+    "STARSAltitude": [
       [
         "13000",
         "17000",
@@ -354,7 +354,7 @@
         "ELDAR ELDAR05"
       ]
     ],
-    "TRANSITIONArrivalAltitude": [
+    "TRANSITIONAltitude": [
       [
         "13000",
         "17000",
