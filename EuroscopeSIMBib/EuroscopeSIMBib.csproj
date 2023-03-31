@@ -57,8 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="airports.json" />
-    <None Include="EDDL.json" />
-    <None Include="airportsbackup.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
