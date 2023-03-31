@@ -233,7 +233,7 @@ namespace EuroscopeSIMBib
                 Console.WriteLine($"Enter {IsSIDorSTAR} distribution key: i.e. 5:1:2:5");
                 Console.WriteLine($"{_selectedairport.ICAO} needs {SIDorSTARflightplanarray[_runwaydirectionindex].Length} numbers");
                 Console.WriteLine("or type \"random\" for a random distribution");
-                Console.WriteLine("Distribtuon numbers have to be in this order: ");
+                Console.WriteLine("Distribution numbers have to be in this order: ");
 
                 WriteDepartureorArrivalNames(SIDorSTARflightplanarray, IsSIDorSTAR);
 
