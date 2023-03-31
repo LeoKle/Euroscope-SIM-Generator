@@ -1,4 +1,3 @@
-﻿using ES;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -233,7 +232,7 @@ namespace EuroscopeSIMBib
                 Console.WriteLine($"Enter {IsSIDorSTAR} distribution key: i.e. 5:1:2:5");
                 Console.WriteLine($"{_selectedairport.ICAO} needs {SIDorSTARflightplanarray[_runwaydirectionindex].Length} numbers");
                 Console.WriteLine("or type \"random\" for a random distribution");
-                Console.WriteLine("Distribtuon numbers have to be in this order: ");
+                Console.WriteLine("Distribution numbers have to be in this order: ");
 
                 WriteDepartureorArrivalNames(SIDorSTARflightplanarray, IsSIDorSTAR);
 
@@ -298,7 +297,6 @@ namespace EuroscopeSIMBib
 
             if (_selectedairport.ILSDefinitions.Length == 1)
             {
-                Console.WriteLine("Length == 1");
             for (int i = 0; i < 4; i++)
             {
                     ScenarioFile.Add($"{_selectedairport.ILSDefinitions[0][i]}");
@@ -306,7 +304,6 @@ namespace EuroscopeSIMBib
             }
             else
             {
-                Console.WriteLine("Length != 1");
                 for (int i = 0; i < 4; i++)
                 {
                     ScenarioFile.Add($"{_selectedairport.ILSDefinitions[_runwaydirectionindex][i]}");
