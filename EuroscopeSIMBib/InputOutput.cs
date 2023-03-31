@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace ES
+namespace EuroscopeSIMBib
 {
     internal class InputOutput
     {

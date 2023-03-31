@@ -28,7 +28,7 @@ namespace EuroscopeSIMBib
         public string[] DeparturePositionAirStart { get; set; }
         public string[] ArrivalStartPosition { get; set; }
         public int[] ArrivalInitialHeading { get; set; }
-        public string[] ILSDefinitions { get; set; }
+        public string[][] ILSDefinitions { get; set; }
         public string[] HoldingDefinitions { get; set; }
         public string[] Pseudopilots { get; set; }
     }

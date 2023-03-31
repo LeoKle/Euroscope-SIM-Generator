@@ -108,7 +108,7 @@ namespace EuroscopeSIMBib
                 string InboundStartPosition = "";
                 string InboundAltitude = "";
                 string InitialHeading = "";
-                for (int i = 0; i < _duration; i++)
+                for (int i = 0; i < _duration; i+=_inboundseparation)
                 {
                     ScenarioFile.Add("");
                     // Get random callsign from inbound list
@@ -296,9 +296,21 @@ namespace EuroscopeSIMBib
         {
             #region ILS definition
 
+            if (_selectedairport.ILSDefinitions.Length == 1)
+            {
+                Console.WriteLine("Length == 1");
             for (int i = 0; i < 4; i++)
             {
-                ScenarioFile.Add($"{_selectedairport.ILSDefinitions[i]}");
+                    ScenarioFile.Add($"{_selectedairport.ILSDefinitions[0][i]}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Length != 1");
+                for (int i = 0; i < 4; i++)
+                {
+                    ScenarioFile.Add($"{_selectedairport.ILSDefinitions[_runwaydirectionindex][i]}");
+                }
             }
 
             #endregion
@@ -323,7 +335,7 @@ namespace EuroscopeSIMBib
         {
             #region Selection of Pseudopilot
 
-            Console.WriteLine("Which station should control the aircrafts");
+            Console.WriteLine("Which station should control the aircraft");
             for (int i = 0; i < _selectedairport.Pseudopilots.Count(); i++)
             {
                 Console.WriteLine($"{i + 1}. {_selectedairport.Pseudopilots[i]}");
