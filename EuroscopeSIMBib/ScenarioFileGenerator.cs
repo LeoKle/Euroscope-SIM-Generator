@@ -298,7 +298,6 @@ namespace EuroscopeSIMBib
 
             if (_selectedairport.ILSDefinitions.Length == 1)
             {
-                Console.WriteLine("Length == 1");
             for (int i = 0; i < 4; i++)
             {
                     ScenarioFile.Add($"{_selectedairport.ILSDefinitions[0][i]}");
@@ -306,7 +305,6 @@ namespace EuroscopeSIMBib
             }
             else
             {
-                Console.WriteLine("Length != 1");
                 for (int i = 0; i < 4; i++)
                 {
                     ScenarioFile.Add($"{_selectedairport.ILSDefinitions[_runwaydirectionindex][i]}");
