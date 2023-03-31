@@ -108,7 +108,7 @@ namespace EuroscopeSIMBib
                 string InboundStartPosition = "";
                 string InboundAltitude = "";
                 string InitialHeading = "";
-                for (int i = 0; i < _duration; i++)
+                for (int i = 0; i < _duration; i+=_inboundseparation)
                 {
                     ScenarioFile.Add("");
                     // Get random callsign from inbound list
