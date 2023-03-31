@@ -323,7 +323,7 @@ namespace EuroscopeSIMBib
         {
             #region Selection of Pseudopilot
 
-            Console.WriteLine("Which station should control the aircrafts");
+            Console.WriteLine("Which station should control the aircraft");
             for (int i = 0; i < _selectedairport.Pseudopilots.Count(); i++)
             {
                 Console.WriteLine($"{i + 1}. {_selectedairport.Pseudopilots[i]}");
