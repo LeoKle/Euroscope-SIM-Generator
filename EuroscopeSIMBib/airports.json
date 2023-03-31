@@ -185,7 +185,7 @@
     "Pseudopilots": [ 
       "EDDK_APP",
       "EDDK_M_APP",
-      "EDGG_P_CTR"
+      "EDGG_PAH_CTR"
     ]
   },
   {
@@ -429,7 +429,7 @@
     "Pseudopilots": [
       "EDDL_APP",
       "EDDL_M_APP",
-      "EDGG_P_CTR"
+      "EDGG_PAH_CTR"
     ]
   }
 
