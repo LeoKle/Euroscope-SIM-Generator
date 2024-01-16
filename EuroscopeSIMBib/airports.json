@@ -1,71 +1,60 @@
 [
   {
-
     "ICAO": "EDDK",
-    "RunwayConfig": [ "14", "32" ],
-    "RunwayConfigText":  [ "14","32"],
-    "RunwayHeadings": [ 136, 316 ],
+    "RunwayConfig": ["14", "32"],
+    "RunwayConfigText": ["14", "32"],
+    "RunwayHeadings": [136, 316],
     "Elevation": "300",
     "SIDSroute": [
       [
-        "DK920 DK921 DK922 COL KUMIK",
-        "DK920 DK922 COL PODIP",
-        "DK930 DK931 NVO",
-        "DK130 DK141 COL",
-        "DK130 DK141 DK143 DK144 DK145 WYP"
+        "DK920 DK921 DK922 COL KUMIK BIGSU TESGA BOMBI",
+        "DK920 DK922 COL PODIP BADGO PELUN ROSUX WRB",
+        "DK930 DK931 NVO MAPAD NAVAK LNO ",
+        "DK130 DK141 COL ROLIS",
+        "DK130 DK141 DK143 DK144 DK145 WYP MISGO SONEB"
       ],
       [
-        "DK041 DK035 DK038 PODIP KUMIK",
-        "DK041 DK035 DK038 PODIP",
-        "DK910 DK911 NVO",
-        "DK041 DK035 DK037 COL",
-        "DK041 DK035 DK036 WYP"
+        "DK041 DK035 DK038 PODIP KUMIK BIGSU TESGA BOMBI",
+        "DK041 DK035 DK038 PODIP BADGO PELUN ROSUX WRB",
+        "DK910 DK911 NVO MAPAD NAVAK LNO",
+        "DK041 DK035 DK037 COL ROLIS",
+        "DK041 DK035 DK036 WYP MISGO SONEB"
       ]
     ],
     "SIDSflightplan": [
       [
-        "KUMIK1Q KUMIK",
-        "PODIP1Q PODIP",
-        "NVO1Q NVO",
-        "COL3F COL",
-        "WYP5F WYP"
+        "KUMIK1Q KUMIK L603 BOMBI",
+        "PODIP1Q PODIP Y867 WRB",
+        "NVO1Q NVO Y868 NAVAK Z283 LNO",
+        "COL3F COL T911 ROLIS",
+        "WYP5F WYP P64 SONEB"
       ],
       [
-        "KUMIK1C KUMIK",
-        "PODIP1C PODIP",
-        "NVO1R NVO",
-        "COL1C COL",
-        "WYP1C WYP"
+        "KUMIK1C KUMIK L603 BOMBI",
+        "PODIP1C PODIP Y867 WRB",
+        "NVO1R NVO Y868 NAVAK Z283 LNO",
+        "COL1C COL T911 ROLIS",
+        "WYP1C WYP MISGO P64 SONEB"
       ]
     ],
     "SIDSAltitude": [
-      [
-        "5000",
-        "5000",
-        "5000",
-        "5000",
-        "5000"
-      ],
-      [
-        "5000",
-        "5000",
-        "5000",
-        "5000",
-        "5000"
-      ]
+      ["5000", "5000", "5000", "5000", "5000"],
+      ["5000", "5000", "5000", "5000", "5000"]
     ],
     "STARSroute": [
       [
         "KOPAG DK418 WYP",
         "ERNEP WYP",
         "GULKO KOGIT WYP",
-        "DEPOK KBO WYP"
+        "SPI DENOV ERKUKI DEPOK KBO WYP",
+        "ARCKY IBESA LEDMU ERUKI DEPOK KBO WYP"
       ],
       [
         "KOPAG COL",
         "ERNEP COL",
         "GULKO COL",
-        "DEPOK KBO COL"
+        "SPI DENOV ERKUKI DEPOK KBO COL",
+        "ARCKY IBESA LEDMU ERUKI DEPOK KBO COL"
       ]
     ],
     "STARSflightplan": [
@@ -73,28 +62,20 @@
         "KOPAG KOPAG2V",
         "ERNEP ERNEP1V",
         "GULKO GULKO2V",
-        "DEPOK DEPOK1V"
+        "SPI T857 DEPOK DEPOK1V",
+        "ARCKY T853 IBESA T860 ERUKI T856 DEPOK DEPOK1V"
       ],
       [
         "KOPAG KOPAG2C",
         "ERNEP ERNEP1C",
         "GULKO GULKO2C",
-        "DEPOK DEPOK1C"
+        "SPI T857 DEPOK DEPOK1C",
+        "ARCKY T853 IBESA T860 ERUKI T856 DEPOK DEPOK1C"
       ]
     ],
     "STARSAltitude": [
-      [
-        "11000",
-        "12000",
-        "11000",
-        "17000"
-      ],
-      [
-        "11000",
-        "12000",
-        "11000",
-        "17000"
-      ]
+      ["12000", "10000", "11000", "18000", "19000"],
+      ["11000", "10000", "11000", "18000", "19000"]
     ],
     "TRANSITIONroute": [
       [
@@ -111,53 +92,29 @@
       ]
     ],
     "TRANSITIONflightplan": [
-      [
-        "KOPAG KOPAG1S",
-        "ERNEP ERNEP1S",
-        "GULKO GULKO1S",
-        "DEPOK DEPOK1S"
-      ],
-      [
-        "KOPAG KOPAG1N",
-        "ERNEP ERNEP1N",
-        "GULKO GULKO1N",
-        "DEPOK DEPOK1N"
-      ]
+      ["KOPAG KOPAG1S", "ERNEP ERNEP1S", "GULKO GULKO1S", "DEPOK DEPOK1S"],
+      ["KOPAG KOPAG1N", "ERNEP ERNEP1N", "GULKO GULKO1N", "DEPOK DEPOK1N"]
     ],
     "TRANSITIONAltitude": [
-      [
-        "11000",
-        "12000",
-        "11000",
-        "17000"
-      ],
-      [
-        "11000",
-        "12000",
-        "11000",
-        "17000"
-      ]
+      ["11000", "12000", "11000", "17000"],
+      ["11000", "12000", "11000", "17000"]
     ],
     "DeparturePositionGroundStart": [
       "N050.52.45.135:E007.07.50.837",
       "N050.51.22.676:E007.09.50.544"
     ],
-    "DeparturePositionAirStart": [ 
+    "DeparturePositionAirStart": [
       "N050.51.17.491:E007.09.57.966",
       "N050.52.50.120:E007.07.44.973"
     ],
-    "ArrivalStartPosition": [ 
+    "ArrivalStartPosition": [
       "N051.11.10.050:E008.17.18.971",
       "N051.01.29.021:E008.50.16.427",
       "N050.28.49.279:E008.18.27.952",
-      "N050.29.13.899:E005.43.46.174"
+      "N050.35.01.391:E005.30.06.227",
+      "N050.10.90.254:E006.02.49.925"
     ],
-    "ArrivalInitialHeading": [ 
-      245,
-      266,
-      317,
-      75
-    ],
+    "ArrivalInitialHeading": [245, 266, 317, 85, 13],
     "ILSDefinitions": [
       [
         "ILS14L:50.8804596:7.1291214:50.8552846:7.1656728",
@@ -172,7 +129,7 @@
         "ILS32L:50.8585091:7.1387503:50.8708337:7.1208554"
       ]
     ],
-    "HoldingDefinitions": [ 
+    "HoldingDefinitions": [
       "HOLDING:WYP:261:-1",
       "HOLDING:COL:298:-1",
       "HOLDING:KBO:140:1",
@@ -182,18 +139,13 @@
       "HOLDING:GULKO:276:-1",
       "HOLDING:KOPAG:205:-1"
     ],
-    "Pseudopilots": [ 
-      "EDDK_APP",
-      "EDDK_M_APP",
-      "EDGG_PAH_CTR"
-    ]
+    "Pseudopilots": ["EDDK_APP", "EDDK_M_APP", "EDGG_PAH_CTR"]
   },
   {
-
     "ICAO": "EDDL",
-    "RunwayConfig": [ "23", "05" ],
-    "RunwayConfigText": [ "23", "05" ],
-    "RunwayHeadings": [ 232, 52 ],
+    "RunwayConfig": ["23", "05"],
+    "RunwayConfigText": ["23", "05"],
+    "RunwayHeadings": [232, 52],
     "Elevation": "150",
     "SIDSroute": [
       [
@@ -312,20 +264,8 @@
       ]
     ],
     "STARSAltitude": [
-      [
-        "13000",
-        "17000",
-        "13000",
-        "13000",
-        "13000"
-      ],
-      [
-        "13000",
-        "17000",
-        "13000",
-        "13000",
-        "13000"
-      ]
+      ["13000", "17000", "13000", "13000", "13000"],
+      ["13000", "17000", "13000", "13000", "13000"]
     ],
     "TRANSITIONroute": [
       [
@@ -362,21 +302,8 @@
       ]
     ],
     "TRANSITIONAltitude": [
-      [
-        "13000",
-        "17000",
-        "13000",
-        "13000",
-        "13000"
-      ],
-      [
-        "13000",
-        "17000",
-        "13000",
-        "13000",
-        "13000",
-        "13000"
-      ]
+      ["13000", "17000", "13000", "13000", "13000"],
+      ["13000", "17000", "13000", "13000", "13000", "13000"]
     ],
     "DeparturePositionGroundStart": [
       "N051.16.42.803:E006.44.59.646",
@@ -394,13 +321,7 @@
       "N050.45.16.504:E006.44.28.864",
       "N050.45.16.504:E006.44.28.864"
     ],
-    "ArrivalInitialHeading": [
-      70,
-      160,
-      253,
-      244,
-      355
-    ],
+    "ArrivalInitialHeading": [70, 160, 253, 244, 355],
 
     "ILSDefinitions": [
       [
@@ -426,11 +347,6 @@
       "HOLDING:MHV:359:-1",
       "HOLDING:RONAD:263:1"
     ],
-    "Pseudopilots": [
-      "EDDL_APP",
-      "EDDL_M_APP",
-      "EDGG_PAH_CTR"
-    ]
+    "Pseudopilots": ["EDDL_APP", "EDDL_M_APP", "EDGG_PAH_CTR"]
   }
-
 ]
